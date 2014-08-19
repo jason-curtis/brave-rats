@@ -157,6 +157,8 @@ class Player(object):
 
 
 class RandomAIPlayer(Player):
+    ''' The most sophisticated Brave Rats AI ever written
+    '''
     def choose_card(self):
         return random.choice(self.hand)
 
@@ -167,7 +169,7 @@ class HumanPlayer(Player):
 
 
 def game_vs_ai():
-    print 'You are playing against the computer!!! be afeared!'
+    print 'You are playing against the most sophisticated Brave Rats AI ever written!!! be afeared!'
     red_player = HumanPlayer(Color.red)
     blue_player = RandomAIPlayer(Color.blue)
 
