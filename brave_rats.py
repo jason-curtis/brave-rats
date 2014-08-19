@@ -191,6 +191,8 @@ def game_vs_ai():
             extra_point = 1 if result is FightResult.blue_wins_2 else 0
             blue_points += 1 + on_hold_points + extra_point
             on_hold_points = 0
+        elif red_card == Card.ambassador and blue_card == Card.ambassador:
+            on_hold_points += 2
         else:
             on_hold_points += 1
 
