@@ -40,3 +40,7 @@ This code duplicates the original game mechanics to allow for on-computer gamepl
     r=5     r       r       r       r       r       r       r       h
     r=6     h       r       r       b       r       r       r       b
     r=7     h       b       r       r       r       r       r       r
+
+## Issues
+
+See the GitHub issues page: https://github.com/thatneat/brave-rats/issues
