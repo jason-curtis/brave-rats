@@ -222,14 +222,6 @@ def print_results_table(red_general_played=False):
         )
 
 
-'''
-TODOs
-2. Spy - Next round, opponent reveals his card first
-Princess actually wins whole game vs. prince
-figure out how more sophisticated AIs can hook in.
-'''
-
-
 if __name__ == '__main__':
     while True:
         game_vs_ai()
