@@ -61,5 +61,8 @@ To play a game against your own AI:
 
 ## Issues
 
-See the GitHub issues page: https://github.com/thatneat/brave-rats/issues
+The game rules are not quite fully implemented.
+
+Everything I am aware of is listed on the GitHub issues page: https://github.com/thatneat/brave-rats/issues
+
 Suggestions and pull requests are very welcome!
