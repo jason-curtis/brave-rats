@@ -12,7 +12,9 @@ This code duplicates the original game mechanics to allow for on-computer gamepl
 ## Usage
 ###Install
 
+    git clone https://github.com/thatneat/brave-rats
     pip install -r requirements.txt # OR, at the moment, just 'pip install enum34'
+    cd brave-rats
     
 ### To play a game against the AI
 
