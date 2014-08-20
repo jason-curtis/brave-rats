@@ -10,16 +10,32 @@ You are encouraged to treat your and your friends to a physical copy of the game
 This code duplicates the original game mechanics to allow for on-computer gameplay and to enable building and studying Brave Rats AIs.
 
 ## Usage
-    # Install
+###Install
+
     pip install -r requirements.txt # OR, at the moment, just 'pip install enum34'
     
-    # To play a game against the AI
+### To play a game against the AI
+
     python brave_rats.py
     
-    # To print the results table -- yes, this is all being calculated from the rules!
+### Building your own AI
+See brains/example_ai.py for an example AI function.
+To play a game against your own AI:
+
     python
     >> import brave_rats
-    >> brave_rats.print_results_table()
+    >> from your_module import your_ai_fn
+    >> brave_rats.play_game(red_brain_fn=your_ai_fn)
+
+`blue_brain_fn` will default to human input, but you can override that too to watch computers clash. For example:
+
+    >> brave_rats.play_game(brave_rats.random_ai_brain_fn, brave_rats.random_ai_brain_fn)
+    
+### To print the results table for individual fights
+
+    python
+    >> from brave_rats import fight
+    >> fight.print_results_table()
             b=0     b=1     b=2     b=3     b=4     b=5     b=6     b=7
     r=0     h       h       h       h       h       b       h       h
     r=1     h       h       b       r       b2      b       b       r
