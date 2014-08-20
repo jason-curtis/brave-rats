@@ -144,18 +144,18 @@ def input_fight():
 
 
 class Player(object):
-    def __init__(self, color, game, card_choosing_fn):
+    def __init__(self, color, game, brain_fn):
         '''
         :param color: a Color enum value
         :param game: a GameStatus object
-        :param card_choosing_fn: The brains of the operation. Should be a function which takes a Player and returns a
+        :param brain_fn: The brains of the operation. Should be a function which takes a Player and returns a
             card from its hand to play. Can harbor hidden powers; should be expected to be called exactly once per
             round.
         '''
         self.hand = [card for card in Card]
         self.color = color
         self.game = game
-        self.card_choosing_fn = card_choosing_fn
+        self.card_choosing_fn = brain_fn
 
     def has_cards(self):
         return bool(len(self.hand))
@@ -168,13 +168,13 @@ class Player(object):
         return card
 
 
-def random_ai_choose_card(player):
+def random_ai_brain_fn(player):
     ''' The most sophisticated Brave Rats AI ever written
     '''
     return random.choice(player.hand)
 
 
-def human_choose_card(player):
+def human_brain_fn(player):
     return _input_card(player.color, player.hand)
 
 
@@ -242,11 +242,10 @@ def resolve_fight(red_card, blue_card, game):
         game.blue_points += 1 + points_from_on_hold + extra_point
 
 
-def game_vs_ai():
-    print 'You are playing against the most sophisticated Brave Rats AI ever written!!! be afeared!'
+def play_game(red_brain_fn=human_brain_fn, blue_brain_fn=random_ai_brain_fn):
     game = GameStatus()
-    red_player = Player(Color.red, game=game, card_choosing_fn=human_choose_card)
-    blue_player = Player(Color.blue, game=game, card_choosing_fn=random_ai_choose_card)
+    red_player = Player(Color.red, game=game, brain_fn=red_brain_fn)
+    blue_player = Player(Color.blue, game=game, brain_fn=blue_brain_fn)
 
     while red_player.has_cards() and not game.winner:
         red_card, blue_card = red_player.choose_and_play_card(), blue_player.choose_and_play_card()
@@ -280,4 +279,4 @@ def print_results_table(red_general_played=False):
 
 if __name__ == '__main__':
     while True:
-        game_vs_ai()
+        play_game()
