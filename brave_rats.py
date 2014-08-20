@@ -3,6 +3,10 @@ import random
 from enum import Enum
 
 
+class CheatingException(Exception):
+    pass
+
+
 class Card(Enum):
     musician = 0
     princess = 1
@@ -140,70 +144,118 @@ def input_fight():
 
 
 class Player(object):
-    def __init__(self, color):
+    def __init__(self, color, game, card_choosing_fn):
+        '''
+        :param color: a Color enum value
+        :param game: a GameStatus object
+        :param card_choosing_fn: The brains of the operation. Should be a function which takes a Player and returns a
+            card from its hand to play. Can harbor hidden powers; should be expected to be called exactly once per
+            round.
+        '''
         self.hand = [card for card in Card]
         self.color = color
+        self.game = game
+        self.card_choosing_fn = card_choosing_fn
 
     def has_cards(self):
         return bool(len(self.hand))
 
-    def choose_card(self):
-        raise NotImplementedError
-
     def choose_and_play_card(self):
-        card = self.choose_card()
+        card = self.card_choosing_fn(self)
+        if card not in self.hand:
+            raise CheatingException('Tried to play card {} which is not in hand'.format(card))
         self.hand.remove(card)
         return card
 
 
-class RandomAIPlayer(Player):
+def random_ai_choose_card(player):
     ''' The most sophisticated Brave Rats AI ever written
     '''
-    def choose_card(self):
-        return random.choice(self.hand)
+    return random.choice(player.hand)
 
 
-class HumanPlayer(Player):
-    def choose_card(self):
-        return _input_card(self.color, self.hand)
+def human_choose_card(player):
+    return _input_card(player.color, player.hand)
+
+
+class GameStatus(object):
+    def __init__(self):
+        self.red_points, self.blue_points = 0, 0
+
+        # List of tuples of (red_card, blue_card)
+        self.resolved_fights = []
+        self.on_hold_fights = []
+
+    @property
+    def on_hold_points(self):
+        two_pointers = [
+            (red_card, blue_card) for red_card, blue_card in self.on_hold_fights
+            if red_card == Card.ambassador and blue_card == Card.ambassador
+        ]
+        return len(self.on_hold_fights) + len(two_pointers)
+
+    @property
+    def winner(self):
+        if self.red_points >= 4:
+            return Color.red
+        if self.blue_points >= 4:
+            return Color.blue
+        return None
+
+    @property
+    def all_fights(self):
+        return self.resolved_fights + self.on_hold_fights
+
+    @property
+    def most_recent_fight(self):
+        all_fights = self.all_fights
+        return all_fights[-1] if all_fights else (None, None)
+
+    @property
+    def score_summary(self):
+        player_scores = 'points: red {} to blue {}'\
+            .format(self.red_points, self.blue_points)
+        if self.on_hold_points:
+            return player_scores + ' with {} points on hold'.format(self.on_hold_points)
+        return player_scores
+
+
+def resolve_fight(red_card, blue_card, game):
+    previous_red_card, previous_blue_card = game.most_recent_fight
+    print 'red:', red_card.name, 'vs. blue:', blue_card.name
+    result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
+    print 'result:', result.name
+
+    if result == FightResult.on_hold:
+        game.on_hold_fights.append((red_card, blue_card))
+    else:
+        game.resolved_fights.extend(game.on_hold_fights)
+        points_from_on_hold = game.on_hold_points
+        game.on_hold_fights = []
+
+    if result in [FightResult.red_wins, FightResult.red_wins_2]:
+        extra_point = 1 if result is FightResult.red_wins_2 else 0
+        game.red_points += 1 + points_from_on_hold + extra_point
+
+    if result in [FightResult.blue_wins, FightResult.blue_wins_2]:
+        extra_point = 1 if result is FightResult.blue_wins_2 else 0
+        game.blue_points += 1 + points_from_on_hold + extra_point
 
 
 def game_vs_ai():
     print 'You are playing against the most sophisticated Brave Rats AI ever written!!! be afeared!'
-    red_player = HumanPlayer(Color.red)
-    blue_player = RandomAIPlayer(Color.blue)
+    game = GameStatus()
+    red_player = Player(Color.red, game=game, card_choosing_fn=human_choose_card)
+    blue_player = Player(Color.blue, game=game, card_choosing_fn=random_ai_choose_card)
 
-    red_points, blue_points = 0, 0
-
-    on_hold_points = 0
-    previous_red_card, previous_blue_card = None, None
-    while red_points < 4 and blue_points < 4 and red_player.has_cards():
+    while red_player.has_cards() and not game.winner:
         red_card, blue_card = red_player.choose_and_play_card(), blue_player.choose_and_play_card()
-        print 'red:', red_card.name, 'vs. blue:', blue_card.name
-        result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
-        print 'result:', result.name
+        resolve_fight(red_card, blue_card, game)
+        print game.score_summary
 
-        if result in [FightResult.red_wins, FightResult.red_wins_2]:
-            extra_point = 1 if result is FightResult.red_wins_2 else 0
-            red_points += 1 + on_hold_points + extra_point
-            on_hold_points = 0
-        elif result in [FightResult.blue_wins, FightResult.blue_wins_2]:
-            extra_point = 1 if result is FightResult.blue_wins_2 else 0
-            blue_points += 1 + on_hold_points + extra_point
-            on_hold_points = 0
-        elif red_card == Card.ambassador and blue_card == Card.ambassador:
-            on_hold_points += 2
-        else:
-            on_hold_points += 1
-
-        print 'red has', red_points, 'to blue\'s', blue_points, 'with', on_hold_points, 'rounds on hold'
-        previous_red_card, previous_blue_card = red_card, blue_card
-    if red_points >= 4:
-        print 'red wins!'
-        return
-    if blue_points >= 4:
-        print 'blue wins!'
-        return
+    # Game's over when while loop exits
+    if game.winner:
+        print game.winner.name.title(), 'wins!'
     else:
         print 'tie!'
         return
