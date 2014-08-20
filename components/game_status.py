@@ -6,7 +6,7 @@ class GameStatus(object):
         self.red_points, self.blue_points = 0, 0
 
         # List of tuples of (red_card, blue_card)
-        self.resolved_fights = []
+        self.resolved_fights = [] # Doesn't include on hold fights; use all_fights for full list
         self.on_hold_fights = []
 
     @property
