@@ -1,5 +1,5 @@
 from enum import Enum
-from components.cards import Card
+from components.cards import Card, Color
 
 
 FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold')
@@ -113,3 +113,16 @@ def resolve_fight(red_card, blue_card, game):
     if result in [FightResult.blue_wins, FightResult.blue_wins_2]:
         extra_point = 1 if result is FightResult.blue_wins_2 else 0
         game.blue_points += 1 + points_from_on_hold + extra_point
+
+
+def successful_spy_color((red_card, blue_card)):
+    ''' Determine whether the provided fight has a non-nullified spy in it
+    Takes a fight tuple of (red_card, blue_card)
+    :return: Color of non-nullified spy, if any, or None if no non-nullified spy.
+    '''
+    spy_nullifiers = {Card.musician, Card.wizard, Card.spy}
+    if red_card == Card.spy and blue_card not in spy_nullifiers:
+        return Color.red
+    if blue_card == Card.spy and red_card not in spy_nullifiers:
+        return Color.blue
+    return None

@@ -27,8 +27,8 @@ class Player(object):
     def has_cards(self):
         return bool(len(self.hand))
 
-    def choose_and_play_card(self, game):
-        card = self.card_choosing_fn(self, game, spied_card=None)  # TODO (#4): spied_card is a placeholder
+    def choose_and_play_card(self, game, spied_card=None):
+        card = self.card_choosing_fn(self, game, spied_card)
         if card not in self.hand:
             raise CheatingException('Tried to play card {} which is not in hand'.format(card))
         self.hand.remove(card)
