@@ -2,7 +2,7 @@ from enum import Enum
 from components.cards import Card, Color
 
 
-FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold')
+FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
 
 def _short_format_result(fight_result_):
@@ -33,9 +33,9 @@ def fight_result(red_card, blue_card, prev_red_card, prev_blue_card):
 
     #1. Princess - wins against prince
     if red_has_power and red_card == Card.princess and blue_card == Card.prince:
-        return FightResult.red_wins
+        return FightResult.red_wins_game
     if blue_has_power and blue_card == Card.princess and red_card == Card.prince:
-        return FightResult.blue_wins
+        return FightResult.blue_wins_game
 
     #7. Prince - you win the round
     if red_has_power and red_card == Card.prince and blue_card != Card.prince:
@@ -93,6 +93,11 @@ def print_results_table(red_general_played=False):
 
 
 def resolve_fight(red_card, blue_card, game):
+    ''' Given a fight, updates the game state according to the resolution of that fight
+    :param red_card: Card enum value played by red player
+    :param blue_card: Card enum value played by blue player
+    :param game: GameStatus instance to be updated
+    '''
     previous_red_card, previous_blue_card = game.most_recent_fight
     print 'red:', red_card.name, 'vs. blue:', blue_card.name
     result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
@@ -113,6 +118,12 @@ def resolve_fight(red_card, blue_card, game):
     if result in [FightResult.blue_wins, FightResult.blue_wins_2]:
         extra_point = 1 if result is FightResult.blue_wins_2 else 0
         game.blue_points += 1 + points_from_on_hold + extra_point
+
+    # If you win by princess, just max out the scoreboard
+    if result == FightResult.red_wins_game:
+        game.red_points = 999999
+    if result == FightResult.blue_wins_game:
+        game.blue_points = 999999
 
 
 def successful_spy_color((red_card, blue_card)):
