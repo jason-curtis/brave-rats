@@ -21,7 +21,6 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
         print game.winner.name.title(), 'wins!'
     else:
         print 'tie!'
-        return
 
 
 if __name__ == '__main__':
