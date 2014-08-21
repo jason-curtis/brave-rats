@@ -102,6 +102,7 @@ def resolve_fight(red_card, blue_card, game):
         game.on_hold_fights.append((red_card, blue_card))
     else:
         game.resolved_fights.extend(game.on_hold_fights)
+        game.resolved_fights.append((red_card, blue_card))
         points_from_on_hold = game.on_hold_points
         game.on_hold_fights = []
 

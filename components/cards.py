@@ -18,4 +18,9 @@ class Card(Enum):
         ).next()
 
 
+def initial_hand():
+    # In a vanilla game, players will start with one of each card
+    return [card for card in Card]
+
+
 Color = Enum('Color', 'red blue')

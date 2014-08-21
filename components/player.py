@@ -1,4 +1,4 @@
-from components.cards import Card
+from components import cards
 
 
 class CheatingException(Exception):
@@ -20,7 +20,7 @@ class Player(object):
             Should return a card from its hand to play. Can harbor hidden powers; should be expected to be called
                 exactly once per round.
         '''
-        self.hand = [card for card in Card] # Start with one of each card
+        self.hand = cards.initial_hand()
         self.color = color
         self.card_choosing_fn = brain_fn
 
