@@ -47,14 +47,16 @@ def _random_witty_remark(card):
     ]).format(card=card.name)
 
 
+CARD_ABBREVIATIONS = ['Mus', 'Pes', 'Spy', 'Asn', 'Amb', 'Wiz', 'Gen', 'Pri']
+
+
 def _print_hand(cards):
-    numeric_cards = sorted(card.value for card in cards)
-    for card in numeric_cards:
-        print ' {}  '.format(card),
-    print
-    for card in numeric_cards:
-        print '{} '.format(card.get_short_name()),
-    print
+    try:
+        numeric_cards = sorted(card.value for card in cards)
+        print ' '.join(' {} '.format(card) for card in numeric_cards)
+        print ' '.join(CARD_ABBREVIATIONS[card] for card in numeric_cards)
+    except IndexError:
+        pass
 
 
 def input_fight():
