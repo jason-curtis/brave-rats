@@ -1,6 +1,6 @@
 from enum import Enum
 from components.cards import Card, Color
-from components.style import CLI_colors
+from components.style import CLI_COLORS
 
 FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
@@ -99,8 +99,8 @@ def resolve_fight(red_card, blue_card, game):
     :param game: GameStatus instance to be updated
     '''
     previous_red_card, previous_blue_card = game.most_recent_fight
-    print 'red: ', CLI_colors.red, red_card.name, CLI_colors.end,\
-        'vs. blue: ', CLI_colors.blue, blue_card.name, CLI_colors.end
+    print 'red: ', CLI_COLORS['red'], red_card.name, CLI_COLORS['end'],\
+        'vs. blue: ', CLI_COLORS['blue'], blue_card.name, CLI_COLORS['end']
     result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
     print 'result:', result.name
 
