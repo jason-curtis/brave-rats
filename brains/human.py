@@ -14,8 +14,9 @@ def _input_card(color, valid_cards):
     '''
 
     try:
-        card_number = input('{} card #: '.format(color.name.title()))
-    except (SyntaxError, NameError):
+        _print_hand(valid_cards)
+        card_number = raw_input('{} card #: '.format(color.name.title()))
+    except NameError:
         print 'Just a number please'
         return _input_card(color, valid_cards)
 
@@ -44,6 +45,16 @@ def _random_witty_remark(card):
         'Good luck, {card}!',
         'nice knowing ya, {card}',
     ]).format(card=card.name)
+
+
+def _print_hand(cards):
+    numeric_cards = sorted(card.value for card in cards)
+    for card in numeric_cards:
+        print ' {}  '.format(card),
+    print
+    for card in numeric_cards:
+        print '{} '.format(card.get_short_name()),
+    print
 
 
 def input_fight():
