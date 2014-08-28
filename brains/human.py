@@ -22,7 +22,7 @@ def _input_card(color, valid_cards):
 
     try:
         card = Card.get_from_int(int(card_number))
-    except (NameError, StopIteration):
+    except (NameError, StopIteration, ValueError):
         print card_number, 'is not a card number. Try again.'
         return _input_card(color, valid_cards)
     else:
