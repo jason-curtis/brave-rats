@@ -123,14 +123,7 @@ def resolve_fight(red_card, blue_card, game):
     if result == FightResult.blue_wins_game:
         game.blue_points = 999999
 
-    result_string = 'red: {}{}{}, vs. blue: {}{}{} \n {}'
-    return result_string.format(CLI_COLORS['red'],
-                                red_card.name,
-                                CLI_COLORS['end'],
-                                CLI_COLORS['blue'],
-                                blue_card.name,
-                                CLI_COLORS['end'],
-                                result.name)
+    return result
 
 def successful_spy_color((red_card, blue_card)):
     ''' Determine whether the provided fight has a non-nullified spy in it
