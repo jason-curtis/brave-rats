@@ -1,6 +1,5 @@
 from enum import Enum
 from components.cards import Card, Color
-from components.style import CLI_COLORS
 
 FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
@@ -99,10 +98,7 @@ def resolve_fight(red_card, blue_card, game):
     :param game: GameStatus instance to be updated
     '''
     previous_red_card, previous_blue_card = game.most_recent_fight
-    print 'red: ', CLI_COLORS['red'], red_card.name, CLI_COLORS['end'],\
-        'vs. blue: ', CLI_COLORS['blue'], blue_card.name, CLI_COLORS['end']
     result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
-    print 'result:', result.name
 
     if result == FightResult.on_hold:
         game.on_hold_fights.append((red_card, blue_card))
@@ -126,6 +122,7 @@ def resolve_fight(red_card, blue_card, game):
     if result == FightResult.blue_wins_game:
         game.blue_points = 999999
 
+    return result
 
 def successful_spy_color((red_card, blue_card)):
     ''' Determine whether the provided fight has a non-nullified spy in it

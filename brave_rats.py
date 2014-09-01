@@ -4,7 +4,7 @@ from components.cards import Color
 from components.fight import resolve_fight, successful_spy_color
 from components.game_status import GameStatus
 from components.player import Player
-
+from components.style import CLI_COLORS
 
 def _get_played_cards(red_player, blue_player, game):
     spy_color = successful_spy_color(game.most_recent_fight)
@@ -28,7 +28,15 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
 
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
-        resolve_fight(red_card, blue_card, game)
+        result = resolve_fight(red_card, blue_card, game)
+        result_string = 'red: {}{}{}, vs. blue: {}{}{} \n {}'
+        print result_string.format(CLI_COLORS['red'],
+                                    red_card.name,
+                                    CLI_COLORS['end'],
+                                    CLI_COLORS['blue'],
+                                    blue_card.name,
+                                    CLI_COLORS['end'],
+                                    result.name)
         print game.score_summary
 
     # Game's over when while loop exits
