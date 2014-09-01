@@ -1,6 +1,5 @@
 from enum import Enum
 from components.cards import Card, Color
-from components.style import CLI_COLORS
 
 FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
