@@ -28,7 +28,7 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
 
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
-        result=resolve_fight(red_card, blue_card, game)
+        result = resolve_fight(red_card, blue_card, game)
         result_string = 'red: {}{}{}, vs. blue: {}{}{} \n {}'
         print result_string.format(CLI_COLORS['red'],
                                     red_card.name,
