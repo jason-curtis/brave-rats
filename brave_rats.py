@@ -23,10 +23,10 @@ def _get_played_cards(red_player, blue_player, game):
         red_card, blue_card = red_player.choose_and_play_card(game), blue_player.choose_and_play_card(game)
     return red_card, blue_card
 
-def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
+def play_game(red_hand, blue_hand, red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
     game = GameStatus()
-    red_player = Player(Color.red, brain_fn=red_brain_fn)
-    blue_player = Player(Color.blue, brain_fn=blue_brain_fn)
+    red_player = Player(Color.red, brain_fn=red_brain_fn, hand=red_hand)
+    blue_player = Player(Color.blue, brain_fn=blue_brain_fn, hand=blue_hand)
 
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
@@ -62,7 +62,7 @@ def print_match_summary(games):
         else:
             print "{} won {} times".format(player.name, wins)
 
-def play_match(red_brain_fn='human_brain_fn', blue_brain_fn='random_ai_brain_fn', num_games=1):
+def play_match(red_brain_fn='human_brain_fn', blue_brain_fn='random_ai_brain_fn', num_games=1, red_hand=None, blue_hand=None,):
     try:
         red_brain_fn = globals()[red_brain_fn]
         blue_brain_fn = globals()[blue_brain_fn]
@@ -71,7 +71,11 @@ def play_match(red_brain_fn='human_brain_fn', blue_brain_fn='random_ai_brain_fn'
         sys.exit()
     games = []
     for ind in range(num_games):
-        games.append(play_game(red_brain_fn=red_brain_fn,blue_brain_fn=blue_brain_fn))
+        games.append(play_game(
+                red_brain_fn=red_brain_fn,
+                blue_brain_fn=blue_brain_fn,
+                red_hand=red_hand,
+                blue_hand=blue_hand))
     return games
 
 if __name__ == '__main__':
@@ -79,6 +83,8 @@ if __name__ == '__main__':
     parser.add_argument('-r','--red_brain_fn', help='Brain function to use for red player')
     parser.add_argument('-b','--blue_brain_fn', help='Brain function to use for blue player', default='')
     parser.add_argument('-n','--num_games', type=int, help='Number of games to play in this match')
+    parser.add_argument('-rh','--red_hand', help='Initial hand for red specified as a string of card numbers like 0325')
+    parser.add_argument('-bh','--blue_hand', help='Initial hand for red specified as a string of card numbers like 0325')
     args = vars(parser.parse_args()) #Convert the Namespace to a dict
     args = {k:v for k,v in args.items() if v} #Remove None values
     games = play_match(**args)
