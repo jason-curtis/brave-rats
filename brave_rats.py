@@ -27,7 +27,7 @@ def play_game(red_hand, blue_hand, red_brain_fn=random_ai_brain_fn, blue_brain_f
     game = GameStatus()
     red_player = Player(Color.red, brain_fn=red_brain_fn, hand=red_hand)
     blue_player = Player(Color.blue, brain_fn=blue_brain_fn, hand=blue_hand)
-
+    game.initial_hands={'red':red_hand,'blue':blue_hand}
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
         result = resolve_fight(red_card, blue_card, game)
