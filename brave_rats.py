@@ -57,7 +57,10 @@ def print_match_summary(games):
     print "Total wins for each player:"
     win_counter = Counter(winners)
     for player, wins in win_counter.iteritems():
-        print "{} won {} times".format(player.name, wins)
+        if player is None:
+            print "{} ties".format(wins)
+        else:
+            print "{} won {} times".format(player.name, wins)
 
 def play_match(red_brain_fn='human_brain_fn', blue_brain_fn='random_ai_brain_fn', num_games=1):
     try:
