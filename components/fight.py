@@ -1,5 +1,6 @@
 from enum import Enum
-from components.cards import Card, Color
+import itertools
+from components.cards import Card, Color, initial_hand
 
 FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
@@ -70,6 +71,13 @@ def fight_result(red_card, blue_card, prev_red_card, prev_blue_card):
         return FightResult.on_hold
 
 
+# Cache off all possible values of fight_result for a fetch-speed gain
+QUICK_FIGHT_RESULT = {
+    cards_: fight_result(*cards_)
+    for cards_ in itertools.product(*[initial_hand()]*2 + [initial_hand() + [None]] * 2)
+}
+
+
 def print_results_table(red_general_played=False):
     ''' Prints a results table similar to that provided with the Brave Rats card game.
     :param red_general_played: if True,
@@ -98,9 +106,12 @@ def resolve_fight(red_card, blue_card, game):
     :param game: GameStatus instance to be updated
     '''
     previous_red_card, previous_blue_card = game.most_recent_fight
-    result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
 
-    if result == FightResult.on_hold:
+    # Using QUICK_FIGHT_RESULT is equivalent to this, but all the answers have been cached off
+    # result = fight_result(red_card, blue_card, previous_red_card, previous_blue_card)
+    result = QUICK_FIGHT_RESULT[(red_card, blue_card, previous_red_card, previous_blue_card)]
+
+    if result is FightResult.on_hold:
         game.on_hold_fights.append((red_card, blue_card))
     else:
         game.resolved_fights.extend(game.on_hold_fights)
@@ -108,11 +119,11 @@ def resolve_fight(red_card, blue_card, game):
         points_from_on_hold = game.on_hold_points
         game.on_hold_fights = []
 
-    if result in [FightResult.red_wins, FightResult.red_wins_2]:
+    if result in {FightResult.red_wins, FightResult.red_wins_2}:
         extra_point = 1 if result is FightResult.red_wins_2 else 0
         game.red_points += 1 + points_from_on_hold + extra_point
 
-    if result in [FightResult.blue_wins, FightResult.blue_wins_2]:
+    if result in {FightResult.blue_wins, FightResult.blue_wins_2}:
         extra_point = 1 if result is FightResult.blue_wins_2 else 0
         game.blue_points += 1 + points_from_on_hold + extra_point
 
@@ -123,6 +134,7 @@ def resolve_fight(red_card, blue_card, game):
         game.blue_points = 999999
 
     return result
+
 
 def successful_spy_color((red_card, blue_card)):
     ''' Determine whether the provided fight has a non-nullified spy in it
