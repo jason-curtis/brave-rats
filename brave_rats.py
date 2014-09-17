@@ -3,7 +3,7 @@ from collections import Counter
 
 from brains.example_ai import random_ai_brain_fn
 from brains.human import human_brain_fn
-from components.cards import Color, RedBlue
+from components.cards import Color
 from components.fight import resolve_fight, successful_spy_color
 from components.brain_management import get_brain_func
 from components.game_status import GameStatus
