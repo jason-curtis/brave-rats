@@ -24,14 +24,10 @@ This code duplicates the original game mechanics to allow for on-computer gamepl
 See brains/example_ai.py for an example AI function.
 To play a game against your own AI:
 
-    python
-    >> import brave_rats
-    >> from your_module import your_ai_fn
-    >> brave_rats.play_game(red_brain_fn=your_ai_fn)
+1. Name your AI's brain function as something that ends with '`_brain_fn`'. For this example, if your AI is called `burninator` the function should be called `burninator_brain_fn`
+2. Place your AI's .py module somewhere inside the brave-rats directory. It will be automatically detected and imported.
+3. Start the round by calling: `python brave_rats.py --red-brain human --blue-brain burninator`
 
-`blue_brain_fn` will default to human input, but you can override that too to watch computers clash. For example:
-
-    >> brave_rats.play_game(brave_rats.random_ai_brain_fn, brave_rats.random_ai_brain_fn)
     
 ### To print the results table for individual fights
 
