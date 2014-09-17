@@ -1,5 +1,6 @@
 import argparse
 from collections import Counter
+import sys
 
 from brains.example_ai import random_ai_brain_fn
 from brains.human import human_brain_fn
@@ -27,7 +28,8 @@ def _get_played_cards(red_player, blue_player, game):
 
 
 def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
-              initial_red_hand_str=None, initial_blue_hand_str=None):
+              initial_red_hand_str=None, initial_blue_hand_str=None,
+              verbose=True):
     game = GameStatus()
     red_player = Player(Color.red, brain_fn=red_brain_fn, hand_str=initial_red_hand_str)
     blue_player = Player(Color.blue, brain_fn=blue_brain_fn, hand_str=initial_blue_hand_str)
@@ -35,26 +37,26 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
         result = resolve_fight(red_card, blue_card, game)
-        result_string = 'red: {}, vs. blue: {} \n {}'
-        print result_string.format(redify(red_card.name),
-                                   blueify(blue_card.name),
-                                   result.name)
-        print game.score_summary
+        if verbose:
+            result_string = 'red: {}, vs. blue: {} \n {}'
+            print result_string.format(redify(red_card.name),
+                                       blueify(blue_card.name),
+                                       result.name)
+            print game.score_summary
 
     # Game's over when while loop exits
-    if game.winner:
-        print game.winner.name.title(), 'wins!'
-    else:
-        print 'tie!'
-    print  # extra newline for readability
+    if verbose:
+        if game.winner:
+            print game.winner.name.title(), 'wins!'
+        else:
+            print 'tie!'
+        print  # extra newline for readability
 
     return game
 
 
 def print_match_summary(games):
     winners = [game.winner for game in games]
-    print "Winners for each game:"
-    print ''.join([getattr(winner, 'name', 'tie')[0] for winner in winners])
     print "Total wins for each player:"
     win_counter = Counter(winners)
     for player, wins in win_counter.iteritems():
@@ -65,15 +67,22 @@ def print_match_summary(games):
 
 
 def play_match(red_brain_fn=human_brain_fn, blue_brain_fn=random_ai_brain_fn,
-               num_games=1):
-    games = [
-        play_game(
+               num_games=1, verbose=True, quiet_games=True):
+    if verbose:
+        sys.stdout.write('\n')
+    for game_index in range(num_games):
+        game = play_game(
             red_brain_fn=red_brain_fn,
             blue_brain_fn=blue_brain_fn,
+            verbose=not quiet_games
         )
-        for game_index in range(num_games)
-    ]
-    return games
+        if quiet_games and verbose:
+            # Games are quiet, so print some stuff at this level
+            sys.stdout.write(getattr(game.winner, 'name', 'tie')[0])
+        yield game
+
+    if verbose:
+        sys.stdout.write('\n')
 
 
 def args_from_match_parser():
@@ -85,8 +94,10 @@ def args_from_match_parser():
     parser.add_argument('-r', '--red-brain', help='Brain function name to use for red player')
     parser.add_argument('-b', '--blue-brain', help='Brain function name to use for blue player')
     parser.add_argument('-n', '--num-games', type=int, help='Number of games to play in this match')
+    parser.add_argument('-q', '--quiet-games', action='store_true', default=False,
+                        help='True if games should print details of each play')
     args = vars(parser.parse_args())  # Convert the Namespace to a dict
-    args = {k:v for k,v in args.items() if v}  # Remove None values
+    args = {k:v for k,v in args.items() if v is not None}  # Remove None values
 
     # Look up brains by name
     if 'red_brain' in args:
