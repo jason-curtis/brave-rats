@@ -38,7 +38,7 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
         result = resolve_fight(red_card, blue_card, game)
         if verbose:
-            result_string = 'red: {}, vs. blue: {} \n {}'
+            result_string = 'red {} vs. blue {} -> {}'
             print result_string.format(redify(red_card.name),
                                        blueify(blue_card.name),
                                        result.name)
