@@ -1,13 +1,15 @@
-import sys
 import argparse
 from collections import Counter
+
 from brains.example_ai import random_ai_brain_fn
 from brains.human import human_brain_fn
-from components.cards import Color
+from components.cards import Color, RedBlue
 from components.fight import resolve_fight, successful_spy_color
+from components.brain_management import get_brain_func
 from components.game_status import GameStatus
 from components.player import Player
-from components.style import CLI_COLORS
+from components.style import blueify, redify
+
 
 def _get_played_cards(red_player, blue_player, game):
     spy_color = successful_spy_color(game.most_recent_fight)
@@ -23,22 +25,20 @@ def _get_played_cards(red_player, blue_player, game):
         red_card, blue_card = red_player.choose_and_play_card(game), blue_player.choose_and_play_card(game)
     return red_card, blue_card
 
-def play_game(red_hand, blue_hand, red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn):
+
+def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
+              initial_red_hand_str=None, initial_blue_hand_str=None):
     game = GameStatus()
-    red_player = Player(Color.red, brain_fn=red_brain_fn, hand=red_hand)
-    blue_player = Player(Color.blue, brain_fn=blue_brain_fn, hand=blue_hand)
-    game.initial_hands={'red':red_hand,'blue':blue_hand}
+    red_player = Player(Color.red, brain_fn=red_brain_fn, hand_str=initial_red_hand_str)
+    blue_player = Player(Color.blue, brain_fn=blue_brain_fn, hand_str=initial_blue_hand_str)
+
     while not game.is_over:
         red_card, blue_card = _get_played_cards(red_player, blue_player, game)
         result = resolve_fight(red_card, blue_card, game)
-        result_string = 'red: {}{}{}, vs. blue: {}{}{} \n {}'
-        print result_string.format(CLI_COLORS['red'],
-                                    red_card.name,
-                                    CLI_COLORS['end'],
-                                    CLI_COLORS['blue'],
-                                    blue_card.name,
-                                    CLI_COLORS['end'],
-                                    result.name)
+        result_string = 'red: {}, vs. blue: {} \n {}'
+        print result_string.format(redify(red_card.name),
+                                   blueify(blue_card.name),
+                                   result.name)
         print game.score_summary
 
     # Game's over when while loop exits
@@ -49,6 +49,7 @@ def play_game(red_hand, blue_hand, red_brain_fn=random_ai_brain_fn, blue_brain_f
     print  # extra newline for readability
 
     return game
+
 
 def print_match_summary(games):
     winners = [game.winner for game in games]
@@ -62,30 +63,39 @@ def print_match_summary(games):
         else:
             print "{} won {} times".format(player.name, wins)
 
-def play_match(red_brain_fn='human_brain_fn', blue_brain_fn='random_ai_brain_fn', num_games=1, red_hand=None, blue_hand=None,):
-    try:
-        red_brain_fn = globals()[red_brain_fn]
-        blue_brain_fn = globals()[blue_brain_fn]
-    except KeyError:
-        print "Can't find that brain function."
-        sys.exit()
-    games = []
-    for ind in range(num_games):
-        games.append(play_game(
-                red_brain_fn=red_brain_fn,
-                blue_brain_fn=blue_brain_fn,
-                red_hand=red_hand,
-                blue_hand=blue_hand))
+
+def play_match(red_brain_fn=human_brain_fn, blue_brain_fn=random_ai_brain_fn,
+               num_games=1):
+    games = [
+        play_game(
+            red_brain_fn=red_brain_fn,
+            blue_brain_fn=blue_brain_fn,
+        )
+        for game_index in range(num_games)
+    ]
     return games
 
-if __name__ == '__main__':
+
+def args_from_match_parser():
+    ''' Fire up an argparser designed to kick off a Brave Rats match between two AIs
+    :return: dict of parsed args suitable for passing to play_match()
+    '''
+
     parser = argparse.ArgumentParser(description="Play a match of Brave Rats games")
-    parser.add_argument('-r','--red_brain_fn', help='Brain function to use for red player')
-    parser.add_argument('-b','--blue_brain_fn', help='Brain function to use for blue player', default='')
-    parser.add_argument('-n','--num_games', type=int, help='Number of games to play in this match')
-    parser.add_argument('-rh','--red_hand', help='Initial hand for red specified as a string of card numbers like 0325')
-    parser.add_argument('-bh','--blue_hand', help='Initial hand for red specified as a string of card numbers like 0325')
-    args = vars(parser.parse_args()) #Convert the Namespace to a dict
-    args = {k:v for k,v in args.items() if v} #Remove None values
-    games = play_match(**args)
+    parser.add_argument('-r', '--red-brain', help='Brain function name to use for red player')
+    parser.add_argument('-b', '--blue-brain', help='Brain function name to use for blue player')
+    parser.add_argument('-n', '--num-games', type=int, help='Number of games to play in this match')
+    args = vars(parser.parse_args())  # Convert the Namespace to a dict
+    args = {k:v for k,v in args.items() if v}  # Remove None values
+
+    # Look up brains by name
+    if 'red_brain' in args:
+        args['red_brain_fn'] = get_brain_func(args.pop('red_brain'))
+    if 'blue_brain' in args:
+        args['blue_brain_fn'] = get_brain_func(args.pop('blue_brain'))
+    return args
+
+
+if __name__ == '__main__':
+    games = play_match(**args_from_match_parser())
     print_match_summary(games)

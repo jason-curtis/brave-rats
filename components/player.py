@@ -6,7 +6,7 @@ class CheatingException(Exception):
 
 
 class Player(object):
-    def __init__(self, color, brain_fn, hand):
+    def __init__(self, color, brain_fn, hand_str=None):
         '''
         :param color: a Color enum value indicating which color this player is playing for
         :param game: a GameStatus object
@@ -19,8 +19,9 @@ class Player(object):
                 player has revealed to play.
             Should return a card from its hand to play. Can harbor hidden powers; should be expected to be called
                 exactly once per round.
+        :param hand_str: string of card values in initial hand (eg. '0123456' to play without Prince)
         '''
-        self.hand = cards.initial_hand(hand)
+        self.hand = cards.initial_hand(hand_str)
         self.color = color
         self.card_choosing_fn = brain_fn
 
