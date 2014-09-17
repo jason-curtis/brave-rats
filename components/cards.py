@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 
 
-class Card(Enum):
+class Card(IntEnum):
     musician = 0
     princess = 1
     spy = 2
@@ -25,4 +25,5 @@ def initial_hand(hand_str=None):
         # In a vanilla game, players will start with one of each card
         return [card for card in Card]
 
-Color = Enum('Color', 'red blue')
+# Use IntEnum, not Enum, here, to prevent bug #15: "Loaded brain functions have wiiiiiierd behavior"
+Color = IntEnum('Color', 'red blue')
