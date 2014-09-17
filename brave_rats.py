@@ -54,7 +54,7 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
 def print_match_summary(games):
     winners = [game.winner for game in games]
     print "Winners for each game:"
-    print winners
+    print ''.join([getattr(winner, 'name', 'tie')[0] for winner in winners])
     print "Total wins for each player:"
     win_counter = Counter(winners)
     for player, wins in win_counter.iteritems():
