@@ -27,6 +27,11 @@ def _get_played_cards(red_player, blue_player, game):
     return red_card, blue_card
 
 
+def _notify_game_over(red_player, blue_player, game):
+    red_player.notify_game_over(game)
+    blue_player.notify_game_over(game)
+
+
 def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
               initial_red_hand_str=None, initial_blue_hand_str=None,
               verbose=True):
@@ -45,6 +50,8 @@ def play_game(red_brain_fn=random_ai_brain_fn, blue_brain_fn=human_brain_fn,
             print game.score_summary
 
     # Game's over when while loop exits
+    _notify_game_over(red_player, blue_player, game)
+
     if verbose:
         if game.winner:
             print game.winner.name.title(), 'wins!'

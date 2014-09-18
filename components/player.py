@@ -34,3 +34,7 @@ class Player(object):
             raise CheatingException('Tried to play card {} which is not in hand'.format(card))
         self.hand.remove(card)
         return card
+
+    def notify_game_over(self, game):
+        # Call the brain function and give it a chance to clean up now that the game's over
+        self.card_choosing_fn(self, game, None)
