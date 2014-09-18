@@ -5,7 +5,7 @@ import pkgutil
 BRAIN_FN_SUFFIX = '_brain_fn'
 
 
-def _unprefixed_name(fn):
+def unprefixed_name(fn):
     return fn.__name__[:-len(BRAIN_FN_SUFFIX)]
 
 
@@ -27,10 +27,10 @@ def discover_brains(brains_root='.'):
         for name, fn in module.__dict__.items()
         if callable(fn) and name.endswith(BRAIN_FN_SUFFIX)
     ]
-    sorted_deduped_brains = sorted(set(brain_fns), key=_unprefixed_name)
+    sorted_deduped_brains = sorted(set(brain_fns), key=unprefixed_name)
 
     brain_fn_lookups = OrderedDict([
-        (_unprefixed_name(fn), fn)
+        (unprefixed_name(fn), fn)
         for fn in sorted_deduped_brains
     ])
 
