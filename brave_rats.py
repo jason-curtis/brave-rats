@@ -95,7 +95,7 @@ def args_from_match_parser():
     parser.add_argument('-b', '--blue-brain', help='Brain function name to use for blue player')
     parser.add_argument('-n', '--num-games', type=int, help='Number of games to play in this match')
     parser.add_argument('-q', '--quiet-games', action='store_true', default=False,
-                        help='True if games should print details of each play')
+                        help='Set to have only game results (not turn-by-turn details) printed to stdout')
     args = vars(parser.parse_args())  # Convert the Namespace to a dict
     args = {k:v for k,v in args.items() if v is not None}  # Remove None values
 
