@@ -1,8 +1,8 @@
-from enum import Enum
+from enum import IntEnum
 import itertools
 from components.cards import Card, Color, initial_hand
 
-FightResult = Enum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
+FightResult = IntEnum('FightResult', 'red_wins red_wins_2 blue_wins blue_wins_2 on_hold red_wins_game blue_wins_game')
 
 
 def _short_format_result(fight_result_):
