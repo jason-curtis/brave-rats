@@ -1,10 +1,11 @@
 #!/usr/bin/python
 #  -*- coding: UTF8 -*-
+import argparse
 from collections import Counter
 import sys
 from brave_rats import play_match
 
-from components.brain_management import discover_brains, unprefixed_name
+from components.brain_management import discover_brains, unprefixed_name, reload_brain
 from components.cards import Color
 from components.style import redify, blueify, color_pad
 
@@ -26,7 +27,7 @@ def _print_table_row(contents):
     sys.stdout.write('\n')
 
 
-def print_summary(results, all_ais):
+def _print_summary(results, all_ais):
     ai_names = [''] + [unprefixed_name(ai) for ai in all_ais]
     _print_table_row([blueify(name) for name in ai_names])
     for red_ai in all_ais:
@@ -54,7 +55,7 @@ def print_summary(results, all_ais):
         _print_table_row([])
 
 
-def play_round_robin(num_games=1000):
+def play_round_robin(num_games=1000, interactive=False):
     brains_dict = discover_brains()
     all_ais = [
         brain_fn
@@ -70,15 +71,27 @@ def play_round_robin(num_games=1000):
     results = {}
     for red_ai in all_ais:
         for blue_ai in all_ais:
-            raw_input(
-                'Next match: {} vs. {}'.format(
-                    redify(unprefixed_name(red_ai)),
-                    blueify(unprefixed_name(blue_ai))
-                )
+            next_match_intro = 'Next match: {} vs. {}'.format(
+                redify(unprefixed_name(red_ai)),
+                blueify(unprefixed_name(blue_ai))
             )
-            games = list(play_match(red_ai, blue_ai, num_games=num_games, verbose=True, quiet_games=True))
+            if interactive:
+                raw_input(next_match_intro)
+            else:
+                print next_match_intro
+
+            games = list(play_match(
+                reload_brain(red_ai),
+                reload_brain(blue_ai),
+                num_games=num_games, verbose=True, quiet_games=True
+            ))
             results[(red_ai, blue_ai)] = games
-            print_summary(results, all_ais)
+            _print_summary(results, all_ais)
 
 if __name__ == '__main__':
-    play_round_robin(int(sys.argv[1]))
+    parser = argparse.ArgumentParser(description="Play a tournament of Brave Rats matches")
+    parser.add_argument('-n', '--num-games', type=int, default=1000, help='Number of games to play in each match')
+    parser.add_argument('-i', '--interactive', default=False, action='store_true', help='Requires')
+    args = parser.parse_args()
+
+    play_round_robin(num_games=args.num_games, interactive=args.interactive)

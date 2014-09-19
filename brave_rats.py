@@ -6,7 +6,7 @@ from brains.example_ai import random_ai_brain_fn
 from brains.human import human_brain_fn
 from components.cards import Color
 from components.fight import resolve_fight, successful_spy_color
-from components.brain_management import get_brain_func
+from components.brain_management import get_brain
 from components.game_status import GameStatus
 from components.player import Player
 from components.style import blueify, redify
@@ -108,9 +108,9 @@ def args_from_match_parser():
 
     # Look up brains by name
     if 'red_brain' in args:
-        args['red_brain_fn'] = get_brain_func(args.pop('red_brain'))
+        args['red_brain_fn'] = get_brain(args.pop('red_brain'))
     if 'blue_brain' in args:
-        args['blue_brain_fn'] = get_brain_func(args.pop('blue_brain'))
+        args['blue_brain_fn'] = get_brain(args.pop('blue_brain'))
     return args
 
 

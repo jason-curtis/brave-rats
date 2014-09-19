@@ -1,4 +1,5 @@
 from components import cards
+from components.brain_management import unprefixed_name
 
 
 class CheatingException(Exception):
@@ -31,7 +32,10 @@ class Player(object):
     def choose_and_play_card(self, game, spied_card=None):
         card = self.card_choosing_fn(self, game, spied_card)
         if card not in self.hand:
-            raise CheatingException('Tried to play card {} which is not in hand'.format(card))
+            raise CheatingException(
+                '{} tried to play card {} which is not in hand {}'
+                .format(unprefixed_name(self.card_choosing_fn), card, self.hand)
+            )
         self.hand.remove(card)
         return card
 
