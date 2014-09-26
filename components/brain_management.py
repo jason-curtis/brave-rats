@@ -17,7 +17,7 @@ def _try_import_module(loader, module_name):
         print 'Error loading module', module_name, 'while discovering brain_fns:', e.message
 
 
-def discover_brains(brains_root='brains'):
+def discover_brains(brains_root='./brains'):
     ''' Finds brain functions (brain = a function with a name ending in "_brain_fn")
     in discovered modules.
     :param brains_root: root path passed to pkgutil.walk_packages to find packages
