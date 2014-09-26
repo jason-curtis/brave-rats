@@ -4,7 +4,7 @@ import sys
 
 
 def dylan_brain_fn(player, game, spied_card):
-    num_games = 1
+    num_games = '1000'
     for index, arg in enumerate(sys.argv):
         if arg == '-n' or arg == '--num-games':
             num_games = sys.argv[index + 1]
