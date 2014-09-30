@@ -85,7 +85,12 @@ def play_match(red_brain_fn=human_brain_fn, blue_brain_fn=random_ai_brain_fn,
         )
         if quiet_games and verbose:
             # Games are quiet, so print some stuff at this level
-            sys.stdout.write(getattr(game.winner, 'name', 'tie')[0])
+            winner_summary_lookup = {
+                Color.red: redify('r'),
+                Color.blue: blueify('b'),
+                None: 't',
+            }
+            sys.stdout.write(winner_summary_lookup[game.winner])
         yield game
 
     if verbose:
