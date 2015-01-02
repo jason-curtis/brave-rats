@@ -28,7 +28,17 @@ To play a game against your own AI:
 2. Place your AI's .py module somewhere inside the brave-rats directory. It will be automatically detected and imported.
 3. Start the round by calling: `python brave_rats.py --red-brain human --blue-brain burninator`
 
-    
+### More options
+
+    python brave_rats.py --help
+
+### Tournament Mode
+This searches the brave-rats directory for brain modules (created using [the instructions above](#building-your-own-ai)) and pits them all against each other for a predetermined set of games, ~~mano a mano~~ rato a rato. This can be used to test AIs against each other.
+
+    python tournament.py
+    # For more options
+    python tournament.py --help
+
 ### To print the results table for individual fights
 
     python
